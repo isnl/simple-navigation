@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>内部导航</title>
+  <!-- {% include './layouts/static.html' %} -->
+  <link rel="stylesheet" href="css/animate.min.css">
+  <link rel="stylesheet" href="css/index.min.css" />
+</head>
+
+<body>
+  <div class="diy-info">
+    <div class="header">
+      <div class="icons">
+        <i class="iconfont icon-tupianbizhi"></i>
+      </div>
+      <div class="search-wrapper">
+        <div class="nav-search">
+          <div class="search-box">
+            <div class="search-form">
+              <div class="form-input">
+                <input type="text" placeholder="请输入搜索内容"/>
+              </div>
+              <div class="form-btn">
+                <button class="go-search-btn">百度搜索</button>
+              </div>
+              <!-- <ul class="list-group" v-if="value !== '' && keywordList.length && showKeywordList">
+                <li class="list-group-item list-group-item-text animated fadeInUp" v-for="(item, index) in keywordList"
+                  :key="index" :class="{ 'list-group-item-info': index == listIndex }"
+                  @click="onHandleChangeKeyword(item.q)">
+                  {{ item.q }}
+                </li>
+              </ul> -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="date-time animated fadeInUp">
+        <div class="date">
+          <span class="month"></span>
+          <span class="month-label">月</span>
+          <span class="day"></span>
+        </div>
+        <div class="week">
+        </div>
+        <div class="time">
+        </div>
+        <div class="time-tips">
+        </div>
+      </div>
+    </div>
+    <div class="wrapper">
+      <div class="left">
+        {% for item in list%}
+        <div class="nav-item">
+          <div class="type animated fadeInUp">{{ item.name }}</div>
+          <div class="type-children">
+            {% for nav in item.children%}
+            <a class="type-children-item animated fadeInUp" href="{{nav.url}}" target="_blank">
+              {% if nav.icon !== '' %}
+              <img src="{{nav.icon}}" />
+              {% endif %}
+              <span>{{ nav.name }}</span>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="right">
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
+<script src="js/jquery.min.js"></script>
+<script src="js/date.js"></script>
+<script src="js/index.js"></script>
+<script>
+  var navs = {{ JSON.stringify(list) }}
+  console.log('navs', navs);
+</script>

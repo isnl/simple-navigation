@@ -1,0 +1,40 @@
+{
+  "name": "cicd",
+  "description": "自动化部署",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "nodemon bin/www --exec babel-node",
+    "prd": "pm2 start bin/www",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.9",
+    "cheerio": "^1.0.0-rc.3",
+    "co": "^4.6.0",
+    "jsonfile": "^6.1.0",
+    "koa": "^2.7.0",
+    "koa-body": "^5.0.0",
+    "koa-bodyparser": "^4.2.1",
+    "koa-html-render": "^1.0.3",
+    "koa-json": "^2.0.2",
+    "koa-logger": "^3.2.0",
+    "koa-onerror": "^4.1.0",
+    "koa-router": "^7.4.0",
+    "koa-static": "^5.0.0",
+    "koa-swig": "^2.2.1",
+    "lodash": "^4.17.21",
+    "minio": "^7.0.30",
+    "moment": "^2.29.4",
+    "nedb": "^1.8.0",
+    "superagent": "^8.0.0",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.18.10",
+    "@babel/core": "^7.18.13",
+    "@babel/node": "^7.18.10",
+    "@babel/preset-env": "^7.18.10",
+    "nodemon": "^1.19.1"
+  }
+}

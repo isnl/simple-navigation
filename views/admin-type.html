@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>导航分类管理</title>
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <link rel="stylesheet" href="css/common.min.css">
+  <link rel="stylesheet" href="css/admin-type.min.css">
+</head>
+
+<body>
+  <div id="app">
+    <nav>
+      <header>
+        <a href="/">导航首页</a>
+        <a href="/admin-type" class="active">分类管理</a>
+        <a href="/admin-nav">数据管理</a>
+      </header>
+    </nav>
+    <div class="type-wrapper">
+      <div class="type-setting">
+        <div class="create-type">
+          <span class="tips">Tips：双击内容可进行编辑</span>
+          <el-input placeholder="请输入分类名称" v-model="typeValue" size="mini" class="create-type-input" maxlength="30"
+            @keyup.enter.native="onCreateType"></el-input>
+          <el-button size="mini" class="theme-button" @click="onCreateType">新建</el-button>
+        </div>
+        <el-table :data="typeList" class="table-wrapper" @cell-dblclick="cellClick">
+          <el-table-column prop="name" label="名称" width="360">
+            <template slot-scope="scope">
+              <el-input size="mini" v-model="scope.row.name" v-if="scope.row.nameEdit" @blur="nameBlur(scope.row)"
+                maxlength="30" v-focus></el-input>
+              <span v-if="!scope.row.nameEdit">{{ scope.row.name }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="sort" label="排序">
+            <template slot-scope="scope">
+              <el-input size="mini" v-model="scope.row.sort" v-if="scope.row.sortEdit" @blur="sortBlur(scope.row)"
+                type="number" maxlength="5" v-focus></el-input>
+              <span v-if="!scope.row.sortEdit">{{ scope.row.sort }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作">
+            <template slot-scope="scope">
+              <el-popconfirm title="确定删除当前分类吗？" @confirm="deleteTypeItem(scope.row)">
+                <i class="el-icon-delete" slot="reference"></i>
+              </el-popconfirm>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
+<script src="js/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+  var app = new Vue({
+    el: '#app',
+    data: {
+      typeList: [],
+      originTypeList: [],
+      typeValue: "",
+    },
+    directives: {
+      focus: {
+        inserted: function (el) {
+          el.querySelector("input").focus();
+        },
+      },
+    },
+    methods: {
+      deleteTypeItem(row) {
+        const { _id } = row;
+        axios.delete(`/type?id=${_id}`).then(res => {
+          if (res.data.code === 200) {
+            this.$message.success("删除成功");
+            this.typeList = this.typeList.filter(item => item._id !== _id);
+          }
+        });
+      },
+      onCreateType() {
+        if (!this.typeValue) {
+          this.$message.warning("请输入分类名称");
+          return;
+        }
+        axios
+          .post("/type", { name: this.typeValue })
+          .then(res => {
+            if (res.data.code === 200) {
+              this.$message.success("新建分类成功");
+              res.data.nameEdit = false;
+              res.data.sortEdit = false;
+              this.typeList = [...this.typeList, res.data.data];
+              this.originTypeList = JSON.parse(JSON.stringify(this.typeList));
+              this.typeValue = "";
+            }
+          });
+      },
+      //双击单元格后，显示input，并通过v-focus让input自动获取焦点
+      cellClick(row, column, cell, event) {
+        if (column.property == "name") {
+          row.nameEdit = true;
+        } else if (column.property == "sort") {
+          row.sortEdit = true;
+        }
+      },
+      //input框失去焦点事件
+      nameBlur(row) {
+        const { name, _id } = row;
+        row.nameEdit = false;
+        if (!this.shouldUpdate(_id, "name")) {
+          return;
+        }
+        axios.patch(`/type?id=${_id}`, { name }).then(res => {
+          if (res.data.code === 200) {
+            this.originTypeList = JSON.parse(JSON.stringify(this.typeList));
+            this.$message.success("修改成功");
+          }
+        });
+      },
+      sortBlur(row) {
+        const { sort, _id } = row;
+        row.sortEdit = false;
+        if (!this.shouldUpdate(_id, "sort")) {
+          return;
+        }
+        axios.patch(`/type?id=${_id}`, { sort: Number(sort) }).then(res => {
+          if (res.data.code === 200) {
+            let newTypeList = [...this.typeList];
+            let sortTypes = newTypeList.filter(item => item.sort);
+            const noSortTypes = newTypeList.filter(item => !item.sort);
+            sortTypes = sortTypes.sort((a, b) => a.sort - b.sort);
+            let types = [...sortTypes, ...noSortTypes];
+            this.typeList = types;
+            this.originTypeList = JSON.parse(JSON.stringify(this.typeList));
+            this.$message.success("修改成功");
+          }
+        });
+      },
+      /**
+       * 原值未改变  不用更新
+       */
+      shouldUpdate(id, key) {
+        const originType = this.originTypeList.find(item => item._id == id);
+        return originType[key] != this.typeList.find(item => item._id == id)[key];
+      },
+      getTypeList() {
+        axios.get('/type').then(res => {
+          if (res.data.code === 200) {
+            this.originTypeList = JSON.parse(JSON.stringify(res.data.data));
+            this.typeList = res.data.data.map(item => ({
+              ...item,
+              nameEdit: false,
+              sortEdit: false,
+            }));
+          }
+        });
+      },
+    },
+    mounted() {
+      this.getTypeList();
+    },
+  })
+</script>

@@ -1,0 +1,6 @@
+{
+  "ignore": [
+    "tmp/*",
+    "history/*"
+  ]
+}

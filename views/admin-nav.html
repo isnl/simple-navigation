@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>导航数据管理</title>
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <link rel="stylesheet" href="css/common.min.css">
+  <link rel="stylesheet" href="css/admin-nav.min.css">
+</head>
+
+<body>
+  <div id="app">
+    <nav>
+      <header>
+        <a href="/">导航首页</a>
+        <a href="/admin-type">分类管理</a>
+        <a href="/admin-nav" class="active">数据管理</a>
+      </header>
+    </nav>
+    <div class="diy-navs">
+      <div class="filter">
+        <span>按分类筛选：</span>
+        <el-select v-model="typeValue" placeholder="请选择分类" size="mini" @change="handleTypeChange" clearable>
+          <el-option v-for="item in typeList" :key="item._id" :label="item.name" :value="item._id">
+          </el-option>
+        </el-select>
+        <span class="tips">Tips：双击内容可进行编辑</span>
+        <el-button class="theme-button" size="mini" @click="modalVisible = true">新建导航</el-button>
+      </div>
+      <el-table :data="list" class="table-wrapper" @cell-dblclick="cellClick">
+        <el-table-column prop="icon" label="图标" width="50">
+          <template slot-scope="scope">
+            <el-upload class="upload-icon" action="/upload" :show-file-list="false" :on-success="
+                res => {
+                  handleIconUpdate(res, scope.row);
+                }
+              " :before-upload="beforeAvatarUpload">
+              <el-tooltip class="item" effect="dark" content="更新图标" placement="top-start">
+                <img v-if="scope.row.icon" :src="scope.row.icon" alt="" class="icon" />
+                <span v-else>无</span>
+              </el-tooltip>
+            </el-upload>
+          </template>
+        </el-table-column>
+        <el-table-column prop="name" label="网站名称" width="140">
+          <template slot-scope="scope">
+            <el-input size="mini" v-model="scope.row.name" v-if="scope.row.nameEdit"
+              @blur="inputBlur(scope.row, 'nameEdit', 'name')"
+              @keyup.enter.native="inputBlur(scope.row, 'nameEdit', 'name')" maxlength="12" v-focus></el-input>
+            <span v-if="!scope.row.nameEdit">{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="url" label="网站URL" width="240">
+          <template slot-scope="scope">
+            <el-input size="mini" v-model="scope.row.url" v-if="scope.row.urlEdit"
+              @blur="inputBlur(scope.row, 'urlEdit', 'url')"
+              @keyup.enter.native="inputBlur(scope.row, 'urlEdit', 'url')" maxlength="200" v-focus></el-input>
+            <span v-if="!scope.row.urlEdit">{{ scope.row.url }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="desc" label="网站描述" width="280">
+          <template slot-scope="scope">
+            <el-input size="mini" type="textarea" :rows="4" v-model="scope.row.desc" v-if="scope.row.descEdit"
+              @blur="inputBlur(scope.row, 'descEdit', 'desc')"
+              @keyup.enter.native="inputBlur(scope.row, 'descEdit', 'desc')" maxlength="12" v-focusTextarea></el-input>
+            <span v-if="!scope.row.descEdit">{{ scope.row.desc }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="time" label="创建时间" width="170">
+          <template slot-scope="scope">
+            <span>{{ scope.row.time }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="sort" label="排序" width="100">
+          <template slot-scope="scope">
+            <el-input size="mini" v-model="scope.row.sort" v-if="scope.row.sortEdit"
+              @blur="inputBlur(scope.row, 'sortEdit', 'sort')"
+              @keyup.enter.native="inputBlur(scope.row, 'sortEdit', 'sort')" type="number" maxlength="5" v-focus>
+            </el-input>
+            <span v-if="!scope.row.sortEdit">{{ scope.row.sort }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="type_name" label="分类" width="160">
+          <template slot-scope="scope">
+            <el-select v-model="scope.row.type_id" placeholder="请选择分类" size="mini"
+              @change="onHandleChangeRowType(scope.row)">
+              <el-option v-for="item in typeList" :key="item._id" :label="item.name" :value="item._id">
+              </el-option>
+            </el-select>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <el-popconfirm title="确定删除当前网址吗？" @confirm="deleteItem(scope.row)">
+              <i class="el-icon-delete" slot="reference"></i>
+            </el-popconfirm>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <el-dialog title="新建导航" :visible.sync="modalVisible" :destroy-on-close="true" @close="resetCreateForm"
+        width="500px" height="400px" :modal-append-to-body="true" :append-to-body="true" :close-on-click-modal="false"
+        :close-on-press-escape="false" custom-class="create-nav-dialog">
+        <el-form ref="form" label-width="120px" size="small">
+          <el-form-item label="icon:" class="el-icon-item">
+            <el-upload class="upload-icon" action="/upload" :show-file-list="false" :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload">
+              <el-tooltip class="item" effect="dark" content="上传icon" placement="top-start">
+                <i class="el-icon-upload" v-if="!uploadIcon"></i>
+                <img :src="uploadIcon" v-else alt="" />
+              </el-tooltip>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="URL*:">
+            <el-input placeholder="请输入网站链接地址" maxlength="200" class="el-input-url" v-model="address">
+            </el-input>
+            <el-tooltip class="item" content="输入URL智能识别图标&&网站名称" placement="top">
+              <span class="el-icon-connection icon-wenzishibie" @click="onIdentifyUrl"></span>
+            </el-tooltip>
+          </el-form-item>
+          <el-form-item label="网站名称*:">
+            <el-input placeholder="请输入网址名称，不超过15个字" maxlength="15" v-model="name" show-word-limit class="el-input-name">
+            </el-input>
+          </el-form-item>
+          <el-form-item label="网站描述:">
+            <el-input type="textarea" :rows="4" placeholder="请输入网址描述，不超过100个字" maxlength="100" v-model="desc"
+              show-word-limit class="el-input-name">
+            </el-input>
+          </el-form-item>
+          <el-form-item label="网站分类*:">
+            <el-select v-model="createTypeValue" placeholder="请选择分类" size="mini" class="el-select-type" clearable>
+              <el-option v-for="item in typeList" :key="item._id" :label="item.name" :value="item._id">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="modalVisible = false" size="small">取 消</el-button>
+          <el-button type="primary" @click="addSelfNav" size="small">确 定</el-button>
+        </div>
+      </el-dialog>
+    </div>
+  </div>
+</body>
+
+</html>
+<script src="js/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+  var app = new Vue({
+    el: '#app',
+    data: {
+      hasUniqueName: false,
+      isActiveted: false, //是否是开通状态
+      tabIndex: 0,
+      info: {},
+      typeValue: "",
+      createTypeValue: "",
+      list: [],
+      originList: [],
+      name: "",
+      desc: "",
+      address: "",
+      uploadIcon: "",
+      token: "",
+      modalVisible: false,
+      editing: false,
+      typeList: [],
+    },
+    directives: {
+      focus: {
+        inserted: function (el) {
+          el.querySelector("input").focus();
+        },
+      },
+      focusTextarea: {
+        inserted: function (el) {
+          el.querySelector("textarea").focus();
+        },
+      },
+    },
+    methods: {
+      /**
+       * 上传图标之前钩子
+       */
+      beforeAvatarUpload(file) {
+        //上传文件后缀名
+        const config = ['.jpg', '.jpeg', '.png'];
+        const suffix = file.name.substring(file.name.lastIndexOf('.'));
+        if (!config.includes(suffix)) {
+          this.$message({
+            type: 'warning',
+            message: '暂不支持当前格式文件上传',
+          });
+          return false;
+        } else {
+          return true;
+        }
+      },
+      getTypeList() {
+        axios.get('/type').then(res => {
+          if (res.data.code === 200) {
+            this.typeList = res.data.data.map(item => ({
+              ...item,
+              nameEdit: false,
+              sortEdit: false,
+            }));
+          }
+        });
+      },
+      /**
+       * 更新小图标
+       */
+      handleIconUpdate(res, row) {
+        if (res.code === 200) {
+          const { url } = res.data;
+          const { _id } = row;
+          const params = { _id, icon: url };
+          axios.patch(`/nav?id=${_id}`, params).then(res => {
+            if (res.data.code === 200) {
+              this.$message.success("修改成功");
+              this.getList();
+            }
+          });
+        } else {
+          this.$message({
+            type: "error",
+            message: res.msg,
+          });
+        }
+      },
+      handleTypeChange(value) {
+        const originList = JSON.parse(JSON.stringify(this.originList));
+        if (!value) {
+          this.list = originList;
+        } else {
+          this.list = originList.filter(item => {
+            return item.type_id == value;
+          });
+        }
+      },
+      deleteItem(row) {
+        const { id } = row;
+        const originList = JSON.parse(JSON.stringify(this.originList));
+        axios.delete(`/nav/?id=${id}`).then(res => {
+          if (res.data.code === 200) {
+            this.$message.success("删除成功");
+            this.originList = originList.filter(item => item._id !== id);
+            this.list = this.list.filter(item => item._id !== id);
+          }
+        });
+      },
+      getList() {
+        axios.get("/nav").then(res => {
+          if (res.data.code === 200) {
+            this.originList = res.data.data.map(item => ({
+              ...item,
+              nameEdit: false,
+              sortEdit: false,
+              descEdit: false,
+              urlEdit: false,
+            }));
+            const parseList = JSON.parse(JSON.stringify(this.originList));
+            if (this.typeValue) {
+              this.list = parseList.filter(item => {
+                return item.type_id == this.typeValue;
+              });
+            } else {
+              this.list = parseList;
+            }
+          }
+        });
+      },
+      //双击单元格后，显示input，并通过v-focus让input自动获取焦点
+      cellClick(row, column, cell, event) {
+        const key = column.property;
+        const editKey = `${key}Edit`;
+        row[editKey] = true;
+      },
+      /**
+       * 文本框失去焦点  调更新接口
+       * @param {*} row
+       * @param {*} editKey
+       * @param {*} key
+       */
+      inputBlur(row, editKey, key) {
+        const { _id } = row;
+        row[editKey] = false;
+        if (!this.shouldUpdate(_id, key)) {
+          return;
+        }
+        if (this.editing) {
+          return;
+        }
+        this.editing = true;
+        const params = { [key]: row[key] };
+        axios
+          .patch(`/nav?id=${_id}`, params)
+          .then(res => {
+            this.editing = false;
+            if (res.data.code === 200) {
+              this.$message.success("修改成功");
+              this.getList();
+            }
+          })
+          .catch(err => {
+            this.editing = false;
+          });
+      },
+      /**
+       * 原值未改变  不用更新
+       */
+      shouldUpdate(id, key) {
+        const originList = this.originList.find(item => item._id == id);
+        return originList[key] != this.list.find(item => item._id == id)[key];
+      },
+      /**
+       * 修改数据的分类
+       * @param {*} row
+       */
+      onHandleChangeRowType(row) {
+        const { _id, type_id } = row;
+        axios.patch(`/nav?id=${_id}`, { type_id }).then(res => {
+          if (res.data.code === 200) {
+            this.$message.success("修改成功");
+            this.getList();
+          }
+        });
+      },
+      /**
+       * 上传图标成功
+       */
+      handleAvatarSuccess(res) {
+        if (res.code === 200) {
+          this.uploadIcon = res.data.url;
+          this.$message({
+            type: "success",
+            message: "上传成功！",
+          });
+        } else {
+          this.$message({
+            type: "error",
+            message: res.msg,
+          });
+        }
+      },
+      /**
+       * 添加一条导航数据
+       */
+      addSelfNav() {
+        if (this.address === "") {
+          this.$message({
+            type: "warning",
+            message: "网站URL不能为空",
+          });
+          return;
+        }
+        if (this.name === "") {
+          this.$message({
+            type: "warning",
+            message: "网站名称不能为空",
+          });
+          return;
+        }
+        if (!this.createTypeValue) {
+          this.$message({
+            type: "warning",
+            message: "请选择网站分类",
+          });
+          return;
+        }
+        axios
+          .post("/nav", {
+            icon: this.uploadIcon,
+            name: this.name,
+            desc: this.desc,
+            url: this.address,
+            type_id: this.createTypeValue,
+          })
+          .then(res => {
+            this.typeValue = this.createTypeValue;
+            this.resetCreateForm();
+            this.getList();
+            if (res.data.code === 200) {
+              this.$message({
+                type: "success",
+                message: "新建成功！",
+              });
+            } else {
+              this.$message({
+                type: "error",
+                message: res.msg,
+              });
+            }
+          })
+          .catch(err => {
+            this.resetCreateForm();
+            this.$message({
+              type: "error",
+              message: err.message,
+            });
+          });
+      },
+      resetCreateForm() {
+        this.modalVisible = false;
+        this.uploadIcon = "";
+        this.name = "";
+        this.address = "";
+        this.createTypeValue = "";
+      },
+      /**
+       * 智能识别icon&&名称
+       */
+      onIdentifyUrl() {
+        if (this.address === "") {
+          this.$message({
+            type: "warning",
+            message: "URL不能为空",
+          });
+          return;
+        }
+        axios
+          .get(`/urlInfo?url=${this.address}`)
+          .then(res => {
+            if (res.data.code === 200) {
+              const { icon, name } = res.data.data;
+              this.uploadIcon = icon;
+              this.name = name.trim().substring(0, 12);
+            } else {
+              this.$message({
+                type: "warning",
+                message: "解析失败，请手动输入",
+              });
+            }
+          })
+          .catch(err => {
+            this.$message({
+              type: "warning",
+              message: "解析失败，请手动输入",
+            });
+          });
+      },
+    },
+    mounted() {
+      this.getTypeList();
+      this.getList();
+    },
+  })
+</script>
