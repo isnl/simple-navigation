@@ -1,6 +1,8 @@
 import superagent from 'superagent';
 import cheerio from 'cheerio';
+import download from 'download';
 import path from 'path';
+import { omit } from 'lodash';
 import fs from 'fs';
 export function success(ctx, data) {
   ctx.body = {
@@ -15,17 +17,13 @@ export function error(ctx, err) {
   };
 }
 async function imgDownload(ext, url) {
-  const now = Date.now();
-  const writeStream = fs.createWriteStream(
-    path.join(__dirname, `../public/upload/${now}.${ext}`),
-  );
-  const readStream = await superagent(url).pipe(writeStream);
-  return new Promise((resolve, reject) => {
-    writeStream.on('finish', function () {
-      writeStream.end();
-      resolve(`/upload/${now}.${ext}`);
+  try {
+    const now = Date.now();
+    await download(url, path.join(__dirname, `../public/upload/`), {
+      filename: `${now}.${ext}`,
     });
-  });
+    return `/upload/${now}.${ext}`;
+  } catch (error) {}
 }
 
 export async function getUrlInfo(url) {
@@ -64,6 +62,7 @@ export async function getUrlInfo(url) {
             '.com.cn',
             '.io',
             '.net',
+            '.vip',
             '.org',
             '.top',
             '.design',
@@ -71,7 +70,9 @@ export async function getUrlInfo(url) {
           if (linkUrl) {
             const isFullUrl = arrayList.some((item) => linkUrl.includes(item));
             if (isFullUrl) {
-              icon = linkUrl;
+              icon = linkUrl.includes(protocol)
+                ? linkUrl
+                : `${protocol}${linkUrl}`;
             } else {
               icon = `${realUrl}${linkUrl}`;
             }

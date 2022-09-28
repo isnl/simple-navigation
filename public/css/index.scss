@@ -170,6 +170,8 @@ body {
 }
 .search-wrapper {
   flex: 1;
+  display: flex;
+  align-items: center;
 }
 .nav-search {
   width: 100%;
@@ -181,7 +183,6 @@ body {
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    align-items: center;
     .search-list {
       padding-top: 20px;
       margin-left: -80px;
@@ -238,7 +239,6 @@ body {
       }
     }
     .search-form {
-      padding-bottom: 20px;
       display: flex;
       position: relative;
       .form-input {

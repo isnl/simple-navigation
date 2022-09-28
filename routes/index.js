@@ -66,9 +66,13 @@ router.get('/urlInfo', async (ctx) => {
   const { url } = ctx.request.query;
   try {
     const result = await getUrlInfo(url);
-    success(ctx, result);
+    if (result) {
+      success(ctx, result);
+    } else {
+      error(ctx, { msg: '解析失败，请手动添加' });
+    }
   } catch (err) {
-    error(err);
+    error(ctx, err);
   }
 });
 router.post('/upload', async (ctx) => {
