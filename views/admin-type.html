@@ -97,8 +97,8 @@
           .then(res => {
             if (res.data.code === 200) {
               this.$message.success("新建分类成功");
-              res.data.nameEdit = false;
-              res.data.sortEdit = false;
+              res.data.data.nameEdit = false;
+              res.data.data.sortEdit = false;
               this.typeList = [...this.typeList, res.data.data];
               this.originTypeList = JSON.parse(JSON.stringify(this.typeList));
               this.typeValue = "";

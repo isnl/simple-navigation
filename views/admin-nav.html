@@ -16,7 +16,7 @@
   <div id="app">
     <nav>
       <header>
-        <a href="/">导航首页</a>
+        <a href="/" target="_blank">导航首页</a>
         <a href="/admin-type">分类管理</a>
         <a href="/admin-nav" class="active">数据管理</a>
       </header>
@@ -50,7 +50,7 @@
           <template slot-scope="scope">
             <el-input size="mini" v-model="scope.row.name" v-if="scope.row.nameEdit"
               @blur="inputBlur(scope.row, 'nameEdit', 'name')"
-              @keyup.enter.native="inputBlur(scope.row, 'nameEdit', 'name')" maxlength="12" v-focus></el-input>
+              @keyup.enter.native="inputBlur(scope.row, 'nameEdit', 'name')" maxlength="20" v-focus></el-input>
             <span v-if="!scope.row.nameEdit">{{ scope.row.name }}</span>
           </template>
         </el-table-column>
@@ -66,7 +66,7 @@
           <template slot-scope="scope">
             <el-input size="mini" type="textarea" :rows="4" v-model="scope.row.desc" v-if="scope.row.descEdit"
               @blur="inputBlur(scope.row, 'descEdit', 'desc')"
-              @keyup.enter.native="inputBlur(scope.row, 'descEdit', 'desc')" maxlength="12" v-focusTextarea></el-input>
+              @keyup.enter.native="inputBlur(scope.row, 'descEdit', 'desc')" maxlength="100" v-focusTextarea></el-input>
             <span v-if="!scope.row.descEdit">{{ scope.row.desc }}</span>
           </template>
         </el-table-column>
@@ -118,9 +118,7 @@
           <el-form-item label="URL*:">
             <el-input placeholder="请输入网站链接地址" maxlength="200" class="el-input-url" v-model="address">
             </el-input>
-            <el-tooltip class="item" content="输入URL智能识别图标&&网站名称" placement="top">
-              <span class="el-icon-connection icon-wenzishibie" @click="onIdentifyUrl"></span>
-            </el-tooltip>
+            <span class="el-icon-connection icon-wenzishibie" @click="onIdentifyUrl"></span>
           </el-form-item>
           <el-form-item label="网站名称*:">
             <el-input placeholder="请输入网址名称，不超过20个字" maxlength="20" v-model="name" show-word-limit class="el-input-name">
@@ -246,13 +244,13 @@
         }
       },
       deleteItem(row) {
-        const { id } = row;
+        const { _id } = row;
         const originList = JSON.parse(JSON.stringify(this.originList));
-        axios.delete(`/nav/?id=${id}`).then(res => {
+        axios.delete(`/nav/?id=${_id}`).then(res => {
           if (res.data.code === 200) {
             this.$message.success("删除成功");
-            this.originList = originList.filter(item => item._id !== id);
-            this.list = this.list.filter(item => item._id !== id);
+            this.originList = originList.filter(item => item._id !== _id);
+            this.list = this.list.filter(item => item._id !== _id);
           }
         });
       },
@@ -419,6 +417,7 @@
        * 智能识别icon&&名称
        */
       onIdentifyUrl() {
+        debugger
         if (this.address === "") {
           this.$message({
             type: "warning",

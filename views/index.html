@@ -12,12 +12,17 @@
 <body>
   <div class="diy-info">
     <div class="header">
+      <div class="nav-menu">
+        <a href="/admin-nav" target="_blank" class="menu-item">
+          <img src="images/home.png" alt="">
+        </a>
+      </div>
       <div class="search-wrapper">
         <div class="nav-search">
           <div class="search-box">
             <div class="search-form">
               <div class="form-input">
-                <input type="text" class="search-input" placeholder="请输入搜索内容"/>
+                <input type="text" class="search-input" placeholder="请输入搜索内容" />
               </div>
               <div class="form-btn">
                 <button class="go-search-btn">百度搜索</button>
@@ -55,10 +60,15 @@
           <div class="type-children">
             {% for nav in item.children%}
             <a class="type-children-item animated fadeInUp" href="{{nav.url}}" target="_blank">
-              {% if nav.icon !== '' %}
-              <img src="{{nav.icon}}" />
-              {% endif %}
-              <span>{{ nav.name }}</span>
+              <div class="nav-header">
+                {% if nav.icon !== '' %}
+                <img src="{{nav.icon}}" />
+                {% endif %}
+                <span>{{ nav.name }}</span>
+              </div>
+              <div class="desc">
+                {{ nav.desc }}
+              </div>
             </a>
             {% endfor %}
           </div>
