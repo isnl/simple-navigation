@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon bin/www --exec babel-node",
     "dev": "bin/www --exec babel-node",
-    "prd": "pm2 start bin/www",
+    "prd": "npx babel-node bin/www",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
