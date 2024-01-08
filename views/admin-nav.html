@@ -297,7 +297,9 @@
           return;
         }
         this.editing = true;
-        const params = { [key]: row[key] };
+        let value = key === "sort" ? Number(row[key]): row[key];
+        console.log('value', value);
+        const params = { [key]: value };
         axios
           .patch(`/nav?id=${_id}`, params)
           .then(res => {

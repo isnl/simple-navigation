@@ -10,15 +10,12 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "adm-zip": "^0.5.9",
     "cheerio": "^1.0.0-rc.3",
     "co": "^4.6.0",
     "download": "^8.0.0",
-    "jsonfile": "^6.1.0",
     "koa": "^2.7.0",
     "koa-body": "^5.0.0",
     "koa-bodyparser": "^4.2.1",
-    "koa-html-render": "^1.0.3",
     "koa-json": "^2.0.2",
     "koa-logger": "^3.2.0",
     "koa-onerror": "^4.1.0",
@@ -26,11 +23,9 @@
     "koa-static": "^5.0.0",
     "koa-swig": "^2.2.1",
     "lodash": "^4.17.21",
-    "minio": "^7.0.30",
     "moment": "^2.29.4",
     "nedb": "^1.8.0",
-    "superagent": "^5.2.2",
-    "uuid": "^8.3.2"
+    "superagent": "^5.2.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.18.10",
@@ -38,8 +33,5 @@
     "@babel/node": "^7.18.10",
     "@babel/preset-env": "^7.18.10",
     "nodemon": "^1.19.1"
-  },
-  "volta": {
-    "node": "14.20.0"
   }
 }

@@ -1,13 +1,28 @@
-### Todo
+一个简易且精美的私有化内网导航系统
 
-bug
+采用 Koa + Swig + Vue2 技术栈开发, Nodejs 版本推荐：  `v14.x`
 
-- [ ] 1.新增数据后双击编辑失效
-- [x] 2.简介描述双击编辑后失去焦点不起作用
 
-feat
+## 演示
 
-- [x] 导航中添加网站描述
-- [ ] 更换壁纸功能
-- [ ] 搜索添加 jsonp
-- [ ] 网站详情爬取描述
+##### 视频演示
+
+<video width="100%" height="auto" controls>
+  <source src="./docs/videos/show.mp4" type="video/mp4">
+</video>
+
+##### 首页
+
+![首页](./docs/images/home.png)
+
+
+##### 分类管理
+
+![分类管理](./docs/images/type.png)
+
+##### 导航数据管理
+
+![导航数据管理](./docs/images/nav.png)
+
+
+## 安装和部署
