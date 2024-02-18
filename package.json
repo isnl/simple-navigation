@@ -1,13 +1,11 @@
 {
-  "name": "cicd",
-  "description": "自动化部署",
+  "name": "local-nav",
+  "description": "内网导航系统",
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon bin/www --exec babel-node",
-    "dev": "bin/www --exec babel-node",
-    "prd": "npx babel-node bin/www",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon bin/www --exec babel-node",
+    "start": "babel-node bin/www"
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
@@ -32,6 +30,7 @@
     "@babel/core": "^7.18.13",
     "@babel/node": "^7.18.10",
     "@babel/preset-env": "^7.18.10",
+    "esno": "^4.0.0",
     "nodemon": "^1.19.1"
   }
 }
