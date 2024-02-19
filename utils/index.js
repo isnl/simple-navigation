@@ -2,8 +2,6 @@ import superagent from 'superagent';
 import cheerio from 'cheerio';
 import download from 'download';
 import path from 'path';
-import { omit } from 'lodash';
-import fs from 'fs';
 export function success(ctx, data) {
   ctx.body = {
     code: 200,

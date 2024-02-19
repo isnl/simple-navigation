@@ -1,6 +1,6 @@
 # base image
 # FROM
-FROM node:14
+FROM node:alpine
 
 # 设置工作目录
 WORKDIR /usr/src/nav
@@ -9,7 +9,7 @@ WORKDIR /usr/src/nav
 COPY package*.json ./
 
 # 安装项目依赖
-RUN npm install
+RUN npm install --registry=https://registry.npmmirror.com/
 
 # 复制应用程序源代码到工作目录
 COPY . .
