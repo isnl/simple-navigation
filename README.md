@@ -5,12 +5,6 @@
 
 ## 演示
 
-##### 视频演示
-
-<video width="100%" height="auto" controls>
-  <source src="./docs/videos/show.mp4" type="video/mp4">
-</video>
-
 ##### 首页
 
 ![首页](https://static.iiter.cn/article/773defb5c0fbe572f9ebf7f4c49472a8.png)
@@ -25,9 +19,10 @@
 ![导航数据管理](https://static.iiter.cn/article/690c66b8af0006e685febdae2ee4bd9b.png)
 
 
+
 ## 安装和部署
 
-#### 本地开发
+### 1.本地开发
 
 安装依赖
 
@@ -41,7 +36,7 @@ npm install
 npm run dev
 ```
 
-### PM2 
+### 2.PM2 
 
 安装依赖  
 
@@ -56,16 +51,16 @@ pm2 start npm --name nav -- run dev
 ```
 
 
-#### Docker
+### 3.Docker
 
-构建镜像
+拉取镜像
 
 ```bash
-docker build . -t nav
+docker pull webpeanut/simple_navigation
 ```
 
 运行
 
 ```bash
-docker run -d --name nav-web -p 8090:8090 nav
+docker run -d -p 8090:8090 webpeanut/simple_navigation
 ```
