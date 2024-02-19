@@ -13,16 +13,16 @@
 
 ##### 首页
 
-![首页](./docs/images/home.png)
+![首页](https://static.iiter.cn/article/773defb5c0fbe572f9ebf7f4c49472a8.png)
 
 
 ##### 分类管理
 
-![分类管理](./docs/images/type.png)
+![分类管理](https://static.iiter.cn/article/3394364b8b18b2c53e58174e6073cc6a.png)
 
 ##### 导航数据管理
 
-![导航数据管理](./docs/images/nav.png)
+![导航数据管理](https://static.iiter.cn/article/690c66b8af0006e685febdae2ee4bd9b.png)
 
 
 ## 安装和部署
