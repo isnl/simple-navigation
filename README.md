@@ -7,7 +7,7 @@
 
 ### 首页
 
-![首页](https://static.iiter.cn/article/773defb5c0fbe572f9ebf7f4c49472a8.png)
+![首页](https://static.iiter.cn/article/61d9e35d4ba153e9e98e3ad4cf5b183c.png)
 
 
 ### 分类管理
