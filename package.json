@@ -1,7 +1,16 @@
 {
-  "name": "local-nav",
+  "name": "simple-navigation",
   "description": "内网导航系统",
   "version": "1.0.0",
+  "author": "Peanut <htmljs@qq.com>",
+  "license": "MIT",
+  "keywords": [
+    "导航",
+    "轻量导航",
+    "程序员导航",
+    "个人导航",
+    "内网导航"
+  ],
   "private": true,
   "scripts": {
     "dev": "nodemon bin/www --exec babel-node",
